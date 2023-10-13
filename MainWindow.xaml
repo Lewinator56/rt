@@ -1,0 +1,23 @@
+﻿<Window x:Class="rt.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:rt"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        KeyDown="Window_KeyDown">
+    <Grid>
+        <Border BorderThickness="2" Width="960" Height="720" BorderBrush="Black">
+            
+            <Image Width="320" Height="240" Name="ren">
+                <Image.LayoutTransform>
+                    <ScaleTransform ScaleX="3" ScaleY="3"></ScaleTransform>
+                </Image.LayoutTransform>
+
+            </Image>
+        </Border>
+        <Label Name="posl"></Label>
+        
+    </Grid>
+</Window>
