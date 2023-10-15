@@ -41,7 +41,7 @@ namespace rt.data
         {
             return new Vector3(180f/MathF.PI * rotation.X, 180f/MathF.PI * rotation.Y, 180f/MathF.PI * rotation.Z);
         }
-
+        
         public void Scale(Vector3 scale)
         {
             this.scale *= scale;
