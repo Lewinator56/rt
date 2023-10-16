@@ -5,17 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:rt"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="960" ResizeMode="NoResize"
+        Title="MainWindow" Height="760" Width="960" ResizeMode="NoResize"
         KeyDown="Window_KeyDown">
     <Grid>
-        <Border BorderThickness="2" Width="960" Height="720" BorderBrush="Black">
-            
-            <Image Width="320" Height="240" Name="ren">
-                <Image.LayoutTransform>
-                    <ScaleTransform ScaleX="3" ScaleY="3"></ScaleTransform>
-                </Image.LayoutTransform>
+        <Border BorderThickness="2" Width="960" Height="750" BorderBrush="Black">
+            <StackPanel>
+                <Image Width="320" Height="240" Name="ren">
+                    <Image.LayoutTransform>
+                        <ScaleTransform ScaleX="3" ScaleY="3"></ScaleTransform>
+                    </Image.LayoutTransform>
 
-            </Image>
+                </Image>
+            </StackPanel>
+            
+            
         </Border>
         <Label Name="posl"></Label>
         

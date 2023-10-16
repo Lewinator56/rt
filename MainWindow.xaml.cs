@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography.Xml;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,7 +41,14 @@ namespace rt
         Player player;
         float step = 1;
         Map m = new Map();
-        float rd = 500;
+        float rdi = 500;
+
+        // optimisaion vectors for raycasting
+        Vector2 p1 = new Vector2(0, 0);
+        Vector2 p2 = new Vector2(0, 0);
+        Vector2 ro = new Vector2(0, 0);
+        Vector2 prerot = new Vector2(0, 0);
+        Vector2 rd = new Vector2(0, 0);
         
         public MainWindow()
         {
@@ -54,8 +62,9 @@ namespace rt
 
             // create the player
             player = new Player("player", new Vector3(90,90, 0), new Vector3(0,0,0.5f), new Vector3(0,0,0), 1);
+
             DispatcherTimer tmr = new DispatcherTimer();
-            tmr.Interval = TimeSpan.FromMilliseconds(10);
+            tmr.Interval = TimeSpan.FromMilliseconds(5);
             tmr.Tick += Update;
             tmr.Start();
 
@@ -65,21 +74,30 @@ namespace rt
 
 
         }
+        public void tmr()
+        {
+            
+        }
 
         public void PutPixel(int xp, int yp, Vector3 c)
         {
             
-            byte[] cd = { (byte)c.X, (byte)c.Y, (byte)c.Z, 0 };
+            byte[] cd = { (byte)c.X, (byte)c.Y, (byte)c.Z , 0};
             if (xp < 0 || xp > x-1 || yp < 0 || yp > y-1)
             {
                 return;
             } else
             {
-                rensc.WritePixels(new Int32Rect(xp, yp, 1, 1), cd, stride, 0);
-                //for (int i = 0; i < 4; i++)
-                //{
-                //    img[(xp + x * yp)+1] = 255;
-                //}
+                //rensc.WritePixels(new Int32Rect(xp, yp, 1, 1), cd, stride, 0);
+                //img[xp + (yp*x) + 1] = cd[0];
+                //img[xp + (yp*x) + 2] = cd[1];
+                //img[xp + (yp*x) + 3] = cd[2];
+                for (int i = 0; i < 3; i++)
+                {
+                    img[(xp * 4) + ((yp * 4) * x) + i] = cd[2-i];
+                }
+                
+
             }
                 
             
@@ -89,8 +107,9 @@ namespace rt
         public void FullUpdate()
         {
 
-            rensc.WritePixels(new Int32Rect(0, 0, 320, 240), img, stride, 0);
+            float ct = DateTime.Now.Millisecond;
             DrawBackground();
+            
             for (int i = 0; i < x; i++)
             {
                 float a = (float)i * player.fov / (float)x;
@@ -110,12 +129,33 @@ namespace rt
                     //Debug.WriteLine(it);
                     for (int j = 0; j < h; j++)
                     {
-
-                        PutPixel(x - i, (int)(c.Y - h/2 + j), (((Wall)ri.gameObject).color / 255) * it);
+                        Vector3 cit = (((Wall)ri.gameObject).color / 255) * it;
+                        PutPixel(x - i, (int)(c.Y - h/2 + j), cit );
+                        // overdraw for AO at the bottom
+                        /**
+                        if (j > h-2)
+                        {
+                            for (int k = 0; k < 3; k++)
+                            {
+                                    PutPixel(x - i, (int)(c.Y - h / 2 + j - k), cit / 3 * (k));
+                            }
+                            for (int k = 0; k < 6; k++)
+                            {
+                                float mult = (((float)j / (float)y)) * 255;
+                                PutPixel(x - i, (int)(c.Y - h / 2 + (j+k)), (new Vector3(255, 255, 255) / y) * mult / 6 * (k));
+                            }
+                        }
+                        **/
                     }
                 }
                 
             }
+            rensc.WritePixels(new Int32Rect(0, 0, x, y), img, stride, 0);
+            
+            float ct2 = DateTime.Now.Millisecond;
+            float d = ct2 - ct;
+            this.Title = "fps: " + (int)(1000 / d) + " frame time: " + d + "ms"; 
+            
             //DrawMap();
 
         }
@@ -177,7 +217,7 @@ namespace rt
 
         public void Update(object sender, EventArgs args)
         {
-            rensc.WritePixels(new Int32Rect(0, 0, 320, 240), img, stride, 0);
+            //rensc.WritePixels(new Int32Rect(0, 0, 320, 240), img, stride, 0);
             if (Keyboard.IsKeyDown(Key.W))
             {
                 player.MoveForward(step);
@@ -219,10 +259,12 @@ namespace rt
             //determine i angle
             float ld = float.MaxValue;
             RayIntersect ri = new RayIntersect(null, ld);
+            
 
             foreach (Wall w in m.walls)
             { 
                 Vector2 p1 = new Vector2(w.x1, w.y1);
+                
                 Vector2 p2 = new Vector2(w.x2, w.y2);
                 Vector2 ro = new Vector2(player.transform.location.X, player.transform.location.Y);
                 Vector3 prerot = player.transform.PreviewRotation(new Vector3(0, 0, 1), ((-player.fov/2 + ra) * MathF.PI)/180f);
@@ -314,7 +356,7 @@ namespace rt
             {
                 if ( i < y/2)
                 {
-                    DrawLine(new Vector2(0, i), new Vector2(x, i), new Vector3(255, 128,15));
+                    DrawLine(new Vector2(0, i), new Vector2(x, i), new Vector3(15, 128, 255));
                 } else
                 {
                     float mult = (((float)i / (float)y)) * 255;
