@@ -14,6 +14,7 @@ namespace rt.data
         public float stepSize;
         public GameObject rayCaster;
         public float fov = 70;
+        
 
         public Player(string name, Vector3 location, Vector3 rotation, Vector3 scale, float stepSize)
         {

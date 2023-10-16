@@ -39,9 +39,10 @@ namespace rt
         int stride;
         WriteableBitmap rensc;
         Player player;
-        float step = 1;
+        float step = 0.125f;
         Map m = new Map();
         float rdi = 500;
+        
 
         // optimisaion vectors for raycasting
         Vector2 p1 = new Vector2(0, 0);
@@ -61,8 +62,10 @@ namespace rt
             ren.Source = rensc;
 
             // create the player
-            player = new Player("player", new Vector3(90,90, 0), new Vector3(0,0,0.5f), new Vector3(0,0,0), 1);
+            player = new Player("player", new Vector3(0, 0, 0), new Vector3(0,0,0.5f), new Vector3(0,0,0), 1);
 
+            // load map
+            m.load();
             DispatcherTimer tmr = new DispatcherTimer();
             tmr.Interval = TimeSpan.FromMilliseconds(5);
             tmr.Tick += Update;
@@ -220,11 +223,21 @@ namespace rt
             //rensc.WritePixels(new Int32Rect(0, 0, 320, 240), img, stride, 0);
             if (Keyboard.IsKeyDown(Key.W))
             {
-                player.MoveForward(step);
+                // raycast collision 
+                RayIntersect ri = DistToWall(0);
+                if (ri.distance > 0.25)
+                {
+                    player.MoveForward(step);
+                }
+                
             }
             else if (Keyboard.IsKeyDown(Key.S))
             {
-                player.MoveForward(-step);
+                RayIntersect ri = DistToWall(180);
+                if (ri.distance > 0.25)
+                {
+                    player.MoveForward(-step);
+                }
             }
             if (Keyboard.IsKeyDown(Key.D))
             {

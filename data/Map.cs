@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,18 +14,32 @@ namespace rt.data
         public List<Wall> walls;
 
         public Map() {
-            walls = new List<Wall>
+            walls = new List<Wall>();
+            
+
+            
+
+
+        }
+        public void load()
+        {
+            string[] m = File.ReadAllLines("map.txt");
+            foreach (string line in m)
             {
-                new Wall(100,100,100, 110, 1, new Vector3(255, 0, 0)),
-                new Wall(100, 110, 110, 110, 1, new Vector3(0,255, 0)),
-                new Wall(110, 110, 150, 120, 1, new Vector3(0,0,255)),
-                new Wall(110, 100, 100, 120, 1, new Vector3(255, 255, 0)),
-                new Wall(120, 120, 130, 120, 1, new Vector3(255,255,255)),
-                new Wall(140, 140, 130, 120, 1, new Vector3(255, 0 ,255))
-
-            };
-
-
+                string[] wdata = line.Split(" ");
+                walls.Add(new Wall(
+                    Convert.ToSingle(wdata[0]),
+                    Convert.ToSingle(wdata[1]),
+                    Convert.ToSingle(wdata[2]),
+                    Convert.ToSingle(wdata[3]),
+                    1,
+                    new Vector3(
+                        Convert.ToSingle(wdata[4]),
+                        Convert.ToSingle(wdata[5]),
+                        Convert.ToSingle(wdata[6])
+                     )
+                 ));
+            }
         }
     }
 }
