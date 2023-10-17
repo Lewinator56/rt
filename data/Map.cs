@@ -28,28 +28,32 @@ namespace rt.data
         public void load()
         {
             string[] m = File.ReadAllLines("map.txt");
-            foreach (string line in m)
+            try
             {
-                string[] wdata = line.Split(" ");
-                walls.Add(new Wall(
-                    Convert.ToSingle(wdata[0]),
-                    Convert.ToSingle(wdata[1]),
-                    Convert.ToSingle(wdata[2]),
-                    Convert.ToSingle(wdata[3]),
-                    1,
-                    new Vector3(
-                        Convert.ToSingle(wdata[4]),
-                        Convert.ToSingle(wdata[5]),
-                        Convert.ToSingle(wdata[6])
-                     ),
-                    Convert.ToInt16(wdata[7]),
-                    File.ReadAllBytes("textures/" + wdata[8] +".bmp")[^49152..],
-                    File.ReadAllBytes("textures/alpha_" + wdata[9] + ".bmp")[^49152..]
-                 )) ;
-            }
+                foreach (string line in m)
+                {
+                    string[] wdata = line.Split(" ");
+                    walls.Add(new Wall(
+                        Convert.ToSingle(wdata[0]),
+                        Convert.ToSingle(wdata[1]),
+                        Convert.ToSingle(wdata[2]),
+                        Convert.ToSingle(wdata[3]),
+                        1,
+                        new Vector3(
+                            Convert.ToSingle(wdata[4]),
+                            Convert.ToSingle(wdata[5]),
+                            Convert.ToSingle(wdata[6])
+                         ),
+                        Convert.ToInt16(wdata[7]),
+                        File.ReadAllBytes("textures/" + wdata[8] + ".bmp")[^49152..],
+                        File.ReadAllBytes("textures/alpha_" + wdata[9] + ".bmp")[^49152..]
+                     ));
+                }
+            } catch { }
+            
             
 
-            floortex = File.ReadAllBytes("textures/tile.bmp")[^49152..];
+            //floortex = File.ReadAllBytes("textures/tile.bmp")[^49152..];
 
         }
     }

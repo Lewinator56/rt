@@ -317,7 +317,15 @@ namespace rt
                     ri.distance = d;
                     ri.gameObject = w;
                     ri.distToStart = dts;
+                } else if (d > ri.distance && d < ri2.distance)
+                {
+                    ri2.distance = d;
+                    ri2.gameObject = w;
+                    ri2.distToStart = dts;
                 }
+
+                
+                
                 
             }
             //Debug.WriteLine(ld);
