@@ -6,12 +6,16 @@ using System.Numerics;
 using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using System.Windows.Media.Imaging;
 
 namespace rt.data
 {
     internal class Map
     {
         public List<Wall> walls;
+        public byte[] floortex = new byte[128*128*3];
+        public byte[] walltex = new byte[128*128*3];
 
         public Map() {
             walls = new List<Wall>();
@@ -40,6 +44,10 @@ namespace rt.data
                      )
                  ));
             }
+            
+            walltex = File.ReadAllBytes("textures/tile.bmp")[^49152..];
+            floortex = File.ReadAllBytes("textures/tile.bmp")[^49152..];
+
         }
     }
 }

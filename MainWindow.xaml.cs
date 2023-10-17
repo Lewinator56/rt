@@ -33,7 +33,7 @@ namespace rt
     {
         int x = 320;
         int y = 240;
-        Vector2 c = new Vector2(320/2, 240/2);
+        Vector2 c;
         PixelFormat pf = PixelFormats.Bgr32;
         byte[] img;
         int stride;
@@ -55,7 +55,7 @@ namespace rt
         {
             InitializeComponent();
 
-            
+            c = new Vector2(x / 2, y / 2);
             stride = (x * pf.BitsPerPixel + 7)/8;
             img = new byte[x * y * 4];
             rensc = new WriteableBitmap(x, y, 96, 96, pf, null);
@@ -133,7 +133,17 @@ namespace rt
                     for (int j = 0; j < h; j++)
                     {
                         Vector3 cit = (((Wall)ri.gameObject).color / 255) * it;
-                        PutPixel(x - i, (int)(c.Y - h/2 + j), cit );
+                        // find the pixel in map.wall
+                        byte px = (byte)((256 / h * j)/2);
+                        byte py = (byte)((ri.distToStart % 1) * 128);
+                        
+                        //Debug.WriteLine((1 % ri.distToStart)*128);
+                        //Debug.WriteLine(py);
+
+                            Vector3 tc = new Vector3(m.floortex[(py * 3) + ((px * 3) * 128)], m.floortex[(py * 3) + ((px * 3) * 128) + 1], m.floortex[(py * 3) + ((px * 3) * 128) + 2]);
+                            PutPixel(x - i, (int)(c.Y - h / 2 + j), tc / 256 * cit);
+
+                        
                         // overdraw for AO at the bottom
                         /**
                         if (j > h-2)
@@ -268,6 +278,7 @@ namespace rt
         {
             // check distance from the player to each wall individually
             float d = float.MaxValue;
+            float dts = 0;
 
             //determine i angle
             float ld = float.MaxValue;
@@ -284,15 +295,16 @@ namespace rt
                 Vector2 rd = new Vector2(MathF.Cos(prerot.X) * MathF.Sin(prerot.Z), MathF.Cos(prerot.X) * MathF.Cos(prerot.Z));
                 //Vector3 newPos = player.transform.location + player.transform.Forward() * 10;
                 //DrawLine(new Vector2(c.X + player.transform.location.X, c.Y + player.transform.location.Y), new Vector2(c.X + newPos.X, c.Y + newPos.Y), new Vector3(0,255, 0));
-                d = RayToLineInterseaction(ro, rd, p1, p2, 100);
+                d = RayToLineInterseaction(ro, rd, p1, p2, 100, out dts);
                 
                 
-                //Debug.WriteLine(d);
+                //Debug.WriteLine(dts);
                 
                 if (d < ri.distance && d > 0)
                 {
                     ri.distance = d;
                     ri.gameObject = w;
+                    ri.distToStart = dts;
                 }
                 
             }
@@ -300,7 +312,7 @@ namespace rt
             return ri;
         }
 
-        float RayToLineInterseaction(Vector2 ro, Vector2 rd, Vector2 p1, Vector2 p2, float length)
+        float RayToLineInterseaction(Vector2 ro, Vector2 rd, Vector2 p1, Vector2 p2, float length, out float dts)
         {
 
             // ray
@@ -324,10 +336,12 @@ namespace rt
                 Vector2 ip = ro + t * r;
                 // get the distance from ro to ip
                 float dst = (MathF.Sqrt((ip.X - ro.X) * (ip.X - ro.X) + (ip.Y - ro.Y) * (ip.Y - ro.Y)));
+                dts = MathF.Abs((MathF.Sqrt((ip.X - p1.X) * (ip.X - p1.X) + (ip.Y - p1.Y) * (ip.Y - p1.Y))));
                 //DrawLine(ro, ip, new Vector3(255, 255, 255));
                 return dst;
             } else
             {
+                dts = 0;
                 return -1;
             }
             /**
@@ -373,11 +387,22 @@ namespace rt
                 } else
                 {
                     float mult = (((float)i / (float)y)) * 255;
-
+                    //DrawFloor(i, mult);
                     DrawLine(new Vector2(0, i), new Vector2(x, i), (new Vector3(128,128,128) / y) * mult);
                 }
             }
         }
+
+        void DrawFloor(int py, float mult)
+        {
+            for (int i = 0; i < x; i++)
+            {
+                //assume texture origin 0,0
+
+            }
+        }
+
+        
 
         Vector2 NormalizeVector(Vector2 pt)
         {

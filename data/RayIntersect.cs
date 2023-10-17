@@ -10,11 +10,13 @@ namespace rt.data
     {
         public  GameObject? gameObject;
         public float distance;
+        public float distToStart;
 
         public RayIntersect(GameObject? gameObject, float distance)
         {
             this.gameObject = gameObject;
             this.distance = distance;
+            
         }
     }
 }
