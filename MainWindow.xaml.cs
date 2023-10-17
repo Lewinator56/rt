@@ -118,48 +118,29 @@ namespace rt
                 float a = (float)i * player.fov / (float)x;
                 float maxd = 50;
 
-                RayIntersect ri = DistToWall(a);
-                float h = y / ri.distance;
-                float perc = 1 - (ri.distance / maxd);
-                //float it =  (255 * MathF.Log(perc+1, 2));
-                float it = perc * 255;
+                (RayIntersect ri, RayIntersect ri2) = DistToWall(a);
+                
 
                 if (ri.distance < maxd)
                 {
-
-                    
-                    //Debug.WriteLine(it);
-                    //Debug.WriteLine(it);
-                    for (int j = 0; j < h; j++)
+                    if (((Wall)ri.gameObject).wtype == 2)
                     {
-                        Vector3 cit = (((Wall)ri.gameObject).color / 255) * it;
-                        // find the pixel in map.wall
-                        byte px = (byte)((256 / h * j)/2);
-                        byte py = (byte)((ri.distToStart % 1) * 128);
-                        
-                        //Debug.WriteLine((1 % ri.distToStart)*128);
-                        //Debug.WriteLine(py);
-
-                            Vector3 tc = new Vector3(m.floortex[(py * 3) + ((px * 3) * 128)], m.floortex[(py * 3) + ((px * 3) * 128) + 1], m.floortex[(py * 3) + ((px * 3) * 128) + 2]);
-                            PutPixel(x - i, (int)(c.Y - h / 2 + j), tc / 256 * cit);
-
-                        
-                        // overdraw for AO at the bottom
-                        /**
-                        if (j > h-2)
+                        // draw window
+                        if (ri2.gameObject != null)
                         {
-                            for (int k = 0; k < 3; k++)
-                            {
-                                    PutPixel(x - i, (int)(c.Y - h / 2 + j - k), cit / 3 * (k));
-                            }
-                            for (int k = 0; k < 6; k++)
-                            {
-                                float mult = (((float)j / (float)y)) * 255;
-                                PutPixel(x - i, (int)(c.Y - h / 2 + (j+k)), (new Vector3(255, 255, 255) / y) * mult / 6 * (k));
-                            }
+                            DrawWallPixel(ri2, i, maxd);
+
                         }
-                        **/
+                        DrawWallPixel(ri, i, maxd);
+
+                    } else
+                    {
+                        DrawWallPixel(ri, i, maxd);
                     }
+
+                    //Debug.WriteLine(it);
+                    //Debug.WriteLine(it);
+                    
                 }
                 
             }
@@ -171,6 +152,33 @@ namespace rt
             
             //DrawMap();
 
+        }
+
+        void DrawWallPixel(RayIntersect ri, int i, float maxd)
+        {
+            Wall w = ((Wall)ri.gameObject);
+            float h = y / ri.distance;
+            float perc = 1 - (ri.distance / maxd);
+            //float it =  (255 * MathF.Log(perc+1, 2));
+            float it = perc * 255;
+
+            for (int j = 0; j < h; j++)
+            {
+
+                Vector3 cit = (w.color / 255) * it;
+                byte px = (byte)((256 / h * j) / 2);
+                byte py = (byte)((ri.distToStart % 1) * 128);
+
+
+                Vector3 tc = new Vector3(w.tex[(py * 3) + ((px * 3) * 128)], w.tex[(py * 3) + ((px * 3) * 128) + 1], w.tex[(py * 3) + ((px * 3) * 128) + 2]);
+                int ta = w.alpha[(py * 3) + ((px * 3) * 128)];
+                if (ta > 0)
+                {
+                    PutPixel(x - i, (int)(c.Y - h / 2 + j), tc / 256 * cit);
+                }
+                
+
+            }
         }
 
 
@@ -234,7 +242,7 @@ namespace rt
             if (Keyboard.IsKeyDown(Key.W))
             {
                 // raycast collision 
-                RayIntersect ri = DistToWall(0);
+                RayIntersect ri = DistToWall(0).Item1;
                 if (ri.distance > 0.25)
                 {
                     player.MoveForward(step);
@@ -243,7 +251,7 @@ namespace rt
             }
             else if (Keyboard.IsKeyDown(Key.S))
             {
-                RayIntersect ri = DistToWall(180);
+                RayIntersect ri = DistToWall(180).Item1;
                 if (ri.distance > 0.25)
                 {
                     player.MoveForward(-step);
@@ -274,7 +282,7 @@ namespace rt
         }
 
 
-        RayIntersect DistToWall(float ra)
+        (RayIntersect, RayIntersect) DistToWall(float ra)
         {
             // check distance from the player to each wall individually
             float d = float.MaxValue;
@@ -283,6 +291,7 @@ namespace rt
             //determine i angle
             float ld = float.MaxValue;
             RayIntersect ri = new RayIntersect(null, ld);
+            RayIntersect ri2 = new RayIntersect(null, ld);
             
 
             foreach (Wall w in m.walls)
@@ -302,6 +311,9 @@ namespace rt
                 
                 if (d < ri.distance && d > 0)
                 {
+                    ri2.distance = ri.distance;
+                    ri2.gameObject = ri.gameObject;
+                    ri2.distToStart = ri.distToStart;
                     ri.distance = d;
                     ri.gameObject = w;
                     ri.distToStart = dts;
@@ -309,7 +321,7 @@ namespace rt
                 
             }
             //Debug.WriteLine(ld);
-            return ri;
+            return (ri, ri2);
         }
 
         float RayToLineInterseaction(Vector2 ro, Vector2 rd, Vector2 p1, Vector2 p2, float length, out float dts)

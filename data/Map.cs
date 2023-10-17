@@ -41,11 +41,14 @@ namespace rt.data
                         Convert.ToSingle(wdata[4]),
                         Convert.ToSingle(wdata[5]),
                         Convert.ToSingle(wdata[6])
-                     )
-                 ));
+                     ),
+                    Convert.ToInt16(wdata[7]),
+                    File.ReadAllBytes("textures/" + wdata[8] +".bmp")[^49152..],
+                    File.ReadAllBytes("textures/alpha_" + wdata[9] + ".bmp")[^49152..]
+                 )) ;
             }
             
-            walltex = File.ReadAllBytes("textures/tile.bmp")[^49152..];
+
             floortex = File.ReadAllBytes("textures/tile.bmp")[^49152..];
 
         }
