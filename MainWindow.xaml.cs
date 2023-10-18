@@ -1,5 +1,6 @@
 ﻿using rt.data;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
@@ -88,6 +89,8 @@ namespace rt
             byte[] cd = { (byte)c.X, (byte)c.Y, (byte)c.Z , 0};
             if (xp < 0 || xp > x-1 || yp < 0 || yp > y-1)
             {
+                Debug.WriteLine("too big" + xp + " " +  yp);
+                
                 return;
             } else
             {
@@ -97,6 +100,7 @@ namespace rt
                 //img[xp + (yp*x) + 3] = cd[2];
                 for (int i = 0; i < 3; i++)
                 {
+                    
                     img[(xp * 4) + ((yp * 4) * x) + i] = cd[2-i];
                 }
                 
@@ -113,7 +117,7 @@ namespace rt
             float ct = DateTime.Now.Millisecond;
             DrawBackground();
             
-            for (int i = 0; i < x; i++)
+            for (int i = 0; i < x-1; i++)
             {
                 float a = (float)i * player.fov / (float)x;
                 float maxd = 50;
@@ -165,6 +169,7 @@ namespace rt
             for (int j = 0; j < h; j++)
             {
 
+                
                 Vector3 cit = (w.color / 255) * it;
                 byte px = (byte)((256 / h * j) / 2);
                 byte py = (byte)((ri.distToStart % 1) * 128);
@@ -287,11 +292,14 @@ namespace rt
             // check distance from the player to each wall individually
             float d = float.MaxValue;
             float dts = 0;
+            
 
             //determine i angle
             float ld = float.MaxValue;
             RayIntersect ri = new RayIntersect(null, ld);
             RayIntersect ri2 = new RayIntersect(null, ld);
+            
+            
             
 
             foreach (Wall w in m.walls)
@@ -403,12 +411,12 @@ namespace rt
             {
                 if ( i < y/2)
                 {
-                    DrawLine(new Vector2(0, i), new Vector2(x, i), new Vector3(15, 128, 255));
+                    DrawLine(new Vector2(0, i), new Vector2(x-1, i), new Vector3(15, 128, 255));
                 } else
                 {
                     float mult = (((float)i / (float)y)) * 255;
                     //DrawFloor(i, mult);
-                    DrawLine(new Vector2(0, i), new Vector2(x, i), (new Vector3(128,128,128) / y) * mult);
+                    DrawLine(new Vector2(0, i), new Vector2(x-1, i), (new Vector3(128,128,128) / y) * mult);
                 }
             }
         }
