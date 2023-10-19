@@ -117,7 +117,7 @@ namespace rt
             float ct = DateTime.Now.Millisecond;
             DrawBackground();
             
-            for (int i = 0; i < x-1; i++)
+            for (int i = 0; i < x; i++)
             {
                 float a = (float)i * player.fov / (float)x;
                 float maxd = 50;
@@ -160,12 +160,13 @@ namespace rt
 
         void DrawWallPixel(RayIntersect ri, int i, float maxd)
         {
+            if (i <= 0) return;
             Wall w = ((Wall)ri.gameObject);
             float h = y / ri.distance;
             float perc = 1 - (ri.distance / maxd);
             //float it =  (255 * MathF.Log(perc+1, 2));
             float it = perc * 255;
-
+            
             for (int j = 0; j < h; j++)
             {
 
@@ -177,7 +178,8 @@ namespace rt
 
                 Vector3 tc = new Vector3(w.tex[(py * 3) + ((px * 3) * 128)], w.tex[(py * 3) + ((px * 3) * 128) + 1], w.tex[(py * 3) + ((px * 3) * 128) + 2]);
                 int ta = w.alpha[(py * 3) + ((px * 3) * 128)];
-                if (ta > 0)
+                int psy = (int)(c.Y - h / 2 + j);
+                if (ta > 0 && psy < y && psy > 0)
                 {
                     PutPixel(x - i, (int)(c.Y - h / 2 + j), tc / 256 * cit);
                 }
@@ -201,6 +203,11 @@ namespace rt
 
             while (true)
             {
+                if (x > this.x-2 || y > this.y-2)
+                {
+                    
+                    break;
+                }
                 PutPixel(x, y, c);
                 if (x == ex && y == ey)
                 {
