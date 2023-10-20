@@ -148,13 +148,14 @@ namespace rt
                 }
                 
             }
+            DrawMap();
             rensc.WritePixels(new Int32Rect(0, 0, x, y), img, stride, 0);
             
             float ct2 = DateTime.Now.Millisecond;
             float d = ct2 - ct;
             this.Title = "fps: " + (int)(1000 / d) + " frame time: " + d + "ms"; 
             
-            //DrawMap();
+            
 
         }
 
@@ -169,7 +170,7 @@ namespace rt
             
             for (int j = 0; j < h; j++)
             {
-                
+
                 
                 Vector3 cit = (w.color / 255) * it;
                 byte px = (byte)((256 / h * j) / 2);
@@ -235,10 +236,10 @@ namespace rt
 
         void DrawMap()
         {
-            
+            PutPixel((int)(c.X + player.transform.location.X), (int)(c.Y + player.transform.location.Y), new Vector3(0, 0, 255));
             foreach (Wall w in m.walls)
             {
-                DrawLine(new Vector2(w.x1, w.y1), new Vector2(w.x2, w.y2), w.color);
+                DrawLine(new Vector2(c.X + w.x1, c.Y + w.y1), new Vector2(c.X + w.x2, c.Y + w.y2), w.color);
 
                 
             }
@@ -278,7 +279,7 @@ namespace rt
             //Debug.WriteLine(newPos);
             //Debug.WriteLine(player.transform.location);
             //Vector3 newPos = player.transform.location + player.transform.Forward() * 10;
-            //PutPixel((int)(player.transform.location.X), (int)(player.transform.location.Y), new Vector3(0,0, 255));
+            
             //DrawLine(new Vector2(player.transform.location.X, player.transform.location.Y), new Vector2(newPos.X, newPos.Y), new Vector3(255, 0, 0));
             //Debug.WriteLine(System.DateTime.Now.Millisecond);
             
