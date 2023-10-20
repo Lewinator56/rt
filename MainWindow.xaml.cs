@@ -89,7 +89,7 @@ namespace rt
             byte[] cd = { (byte)c.X, (byte)c.Y, (byte)c.Z , 0};
             if (xp < 0 || xp > x-1 || yp < 0 || yp > y-1)
             {
-                Debug.WriteLine("too big" + xp + " " +  yp);
+                //Debug.WriteLine("too big" + xp + " " +  yp);
                 
                 return;
             } else
@@ -160,7 +160,7 @@ namespace rt
 
         void DrawWallPixel(RayIntersect ri, int i, float maxd)
         {
-            if (i <= 0) return;
+            
             Wall w = ((Wall)ri.gameObject);
             float h = y / ri.distance;
             float perc = 1 - (ri.distance / maxd);
@@ -169,7 +169,7 @@ namespace rt
             
             for (int j = 0; j < h; j++)
             {
-
+                
                 
                 Vector3 cit = (w.color / 255) * it;
                 byte px = (byte)((256 / h * j) / 2);
@@ -181,7 +181,7 @@ namespace rt
                 int psy = (int)(c.Y - h / 2 + j);
                 if (ta > 0 && psy < y && psy > 0)
                 {
-                    PutPixel(x - i, (int)(c.Y - h / 2 + j), tc / 256 * cit);
+                    PutPixel(x - i, psy, tc / 256 * cit);
                 }
                 
 
@@ -203,11 +203,7 @@ namespace rt
 
             while (true)
             {
-                if (x > this.x-2 || y > this.y-2)
-                {
-                    
-                    break;
-                }
+                
                 PutPixel(x, y, c);
                 if (x == ex && y == ey)
                 {
